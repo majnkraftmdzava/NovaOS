@@ -1,4 +1,4 @@
--- NovaOS v16.2 Client (Full Complete Core with Multithreaded Smooth Audio)
+-- NovaOS v16.2 Client (Full Complete Core with Server Config & Smooth Audio)
 local term = term
 local colors = colors
 local os = os
@@ -38,8 +38,15 @@ local function loadServerConfig()
         local f = fs.open(serverConfigFile, "r")
         local id = tonumber(f.readLine())
         f.close()
-        if id then currentServerID = id end
+        if id and id > 0 then currentServerID = id end
     end
+end
+
+local function saveServerConfig(id)
+    currentServerID = tonumber(id)
+    local f = fs.open(serverConfigFile, "w")
+    f.write(tostring(currentServerID or 0))
+    f.close()
 end
 
 loadServerConfig()
@@ -405,10 +412,18 @@ local function processCommand(cmd)
     table.insert(cmdHistory, "> " .. cmd)
     local lower = string.lower(cmd)
     if lower == "help" then
-        table.insert(cmdHistory, "Available: help, ping, list, clear, time, ram, reboot, messenger")
+        table.insert(cmdHistory, "Available: help, ping, server <id>, list, clear, time, ram, reboot, messenger")
     elseif lower == "clear" then cmdHistory = {}
     elseif lower == "ping" then
         if pingServer() then table.insert(cmdHistory, "Server pinged successfully!") else table.insert(cmdHistory, "Failed to ping server!") end
+    elseif string.sub(lower, 1, 7) == "server " then
+        local id = tonumber(string.sub(cmd, 8))
+        if id then
+            saveServerConfig(id)
+            table.insert(cmdHistory, "Server ID set to #" .. id)
+        else
+            table.insert(cmdHistory, "Invalid Server ID!")
+        end
     elseif lower == "list" or lower == "dir" then
         local files = fs.list("")
         table.insert(cmdHistory, "Files: " .. table.concat(files, ", "))
@@ -463,14 +478,15 @@ local function drawTopBar()
     term.write(string.rep(" ", w))
     
     term.setCursorPos(2, 1)
-    term.write("NovaOS v16.2 [" .. currentUser .. "]")
+    term.write("NovaOS [" .. currentUser .. "]")
     
     if hasUnreadNotifications then
         term.setTextColor(colors.yellow)
         term.write(" [!] Msg")
     end
     
-    term.setCursorPos(25, 1)
+    -- Кликабельный статус сервера в верхнем баре для настройки
+    term.setCursorPos(22, 1)
     if currentServerID then
         term.setTextColor(colors.lime)
         term.write("[Srv:#" .. currentServerID .. "]")
@@ -499,8 +515,8 @@ end
 local function drawStartMenu()
     if not isStartMenuOpen then return end
     
-    local menuX, menuW = 2, 22
-    local menuH = 13
+    local menuX, menuW = 2, 24
+    local menuH = 14
     local menuY = h - menuH
     
     term.setBackgroundColor(colors.lightGray)
@@ -511,16 +527,16 @@ local function drawStartMenu()
         term.write(string.rep(" ", menuW))
     end
     
-    term.setCursorPos(menuX + 1, menuY + 1) term.write("> Task Manager")
-    term.setCursorPos(menuX + 1, menuY + 2) term.write("> Terminal (CMD)")
-    term.setCursorPos(menuX + 1, menuY + 3) term.write("> Nova Paint")
-    term.setCursorPos(menuX + 1, menuY + 4) term.write("> Redstone/Security")
-    term.setCursorPos(menuX + 1, menuY + 5) term.write("> Stock Market")
-    term.setCursorPos(menuX + 1, menuY + 6) term.write("> Calculator")
-    term.setCursorPos(menuX + 1, menuY + 7) term.write("> Notepad File")
-    term.setCursorPos(menuX + 1, menuY + 8) term.write("> File Explorer")
-    term.setCursorPos(menuX + 1, menuY + 9) term.write("> Music Player")
-    term.setCursorPos(menuX + 1, menuY + 10) term.write("> NovaHelp")
+    term.setCursorPos(menuX + 1, menuY + 1)  term.write("> Task Manager")
+    term.setCursorPos(menuX + 1, menuY + 2)  term.write("> Terminal (CMD)")
+    term.setCursorPos(menuX + 1, menuY + 3)  term.write("> Nova Paint")
+    term.setCursorPos(menuX + 1, menuY + 4)  term.write("> Redstone/Security")
+    term.setCursorPos(menuX + 1, menuY + 5)  term.write("> Stock Market")
+    term.setCursorPos(menuX + 1, menuY + 6)  term.write("> Calculator")
+    term.setCursorPos(menuX + 1, menuY + 7)  term.write("> Notepad File")
+    term.setCursorPos(menuX + 1, menuY + 8)  term.write("> File Explorer")
+    term.setCursorPos(menuX + 1, menuY + 9)  term.write("> Music Player")
+    term.setCursorPos(menuX + 1, menuY + 10) term.write("> Set Server ID")
     term.setCursorPos(menuX + 1, menuY + 11) term.write("> Switch User")
     term.setCursorPos(menuX + 1, menuY + 12) term.write("> Reboot / Exit")
 end
@@ -711,7 +727,7 @@ local function drawAppContent(id, x, y, winW, winH)
         term.setCursorPos(x + 2, y + 1) term.write("=== NovaOS v16.2 ===")
         term.setTextColor(colors.white)
         term.setCursorPos(x + 2, y + 3) term.write("- Modular Architecture")
-        term.setCursorPos(x + 2, y + 4) term.write("- Multithreaded Smooth Audio")
+        term.setCursorPos(x + 2, y + 4) term.write("- Server ID Config Restored")
     elseif id == "taskmgr" then
         term.setBackgroundColor(colors.black)
         for row = y, y + winH - 1 do
@@ -797,14 +813,49 @@ local function render()
     drawStartMenu()
 end
 
+local function promptServerConfig()
+    term.setBackgroundColor(colors.black)
+    term.clear()
+    term.setCursorPos(math.floor(w/2) - 10, math.floor(h/2) - 2)
+    term.setTextColor(colors.yellow)
+    term.write("=== Server Configuration ===")
+    
+    term.setCursorPos(math.floor(w/2) - 12, math.floor(h/2))
+    term.setTextColor(colors.white)
+    term.write("Enter Server Computer ID:")
+    
+    term.setCursorPos(math.floor(w/2) - 6, math.floor(h/2) + 2)
+    term.setBackgroundColor(colors.gray)
+    term.write(" [         ] ")
+    
+    term.setCursorPos(math.floor(w/2) - 4, math.floor(h/2) + 2)
+    term.setTextColor(colors.yellow)
+    
+    local input = read()
+    local id = tonumber(input)
+    if id then
+        saveServerConfig(id)
+    end
+    render()
+end
+
 local function handleMouseClick(btn, cx, cy)
+    if cy == 1 then
+        -- Клик по плашке сервера в верхнем баре открывает настройку
+        if cx >= 22 and cx <= 33 then
+            isStartMenuOpen = false
+            promptServerConfig()
+            return
+        end
+    end
+
     if cy == h then
         if cx >= 2 and cx <= 10 then isStartMenuOpen = not isStartMenuOpen render()
         elseif isStartMenuOpen then isStartMenuOpen = false render() end
     elseif isStartMenuOpen then
-        local menuH = 13
+        local menuH = 14
         local menuY = h - menuH
-        if cx >= 2 and cx <= 23 and cy >= menuY and cy < h then
+        if cx >= 2 and cx <= 25 and cy >= menuY and cy < h then
             local opt = cy - menuY
             isStartMenuOpen = false
             if opt == 1 then windows.taskmgr.visible = true bringToFront("taskmgr") render()
@@ -816,7 +867,7 @@ local function handleMouseClick(btn, cx, cy)
             elseif opt == 7 then windows.notepad.visible = true bringToFront("notepad") render()
             elseif opt == 8 then windows.files.visible = true bringToFront("files") render()
             elseif opt == 9 then windows.music.visible = true bringToFront("music") render()
-            elseif opt == 10 then windows.help.visible = true bringToFront("help") render()
+            elseif opt == 10 then promptServerConfig()
             elseif opt == 11 then currentUser = nil loginScreen() render()
             elseif opt == 12 then playShutdownSound() os.reboot() end
         else isStartMenuOpen = false render() end
@@ -952,7 +1003,6 @@ local function handleMouseClick(btn, cx, cy)
     end
 end
 
--- Поток беспрерывной подачи аудио без лагов
 local function audioPlayerThread()
     while true do
         if musicState == "playing" and musicFileHandle and speakerSide then
@@ -980,7 +1030,6 @@ local function audioPlayerThread()
     end
 end
 
--- Поток обработки интерфейса и событий ОС
 local function uiEventThread()
     local clockTimer = os.startTimer(1)
     while true do
@@ -1051,7 +1100,6 @@ local function mainOSLoop()
     playStartupSound()
     render()
     
-    -- Запуск ОС и аудиопотока параллельно без взаимных лагов
     parallel.waitForAny(audioPlayerThread, uiEventThread)
 end
 
