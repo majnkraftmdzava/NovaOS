@@ -1,4 +1,4 @@
--- NovaOS v16.2 GitHub Installer
+-- NovaOS v16.2 GitHub Installer (Complete with Settings & Arcade)
 local term = term
 local colors = colors
 local fs = fs
@@ -27,7 +27,8 @@ local baseUrl = "https://raw.githubusercontent.com/" .. GITHUB_USER .. "/" .. RE
 
 local filesToDownload = {
     "startup",
-    "arcade_app"
+    "arcade_app",
+    "settings_app"
 }
 
 for _, filename in ipairs(filesToDownload) do
