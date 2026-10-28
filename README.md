@@ -11,7 +11,7 @@
 Run this command on your **Advanced Computer** terminal in-game:
 
 ```bash
-wget run [https://raw.githubusercontent.com/YOUR_USERNAME/NovaOS/main/install.lua](https://raw.githubusercontent.com/YOUR_USERNAME/NovaOS/main/install.lua)
+wget run [https://raw.githubusercontent.com/majnkraftmdzava-lang/NovaOS/main/install.lua](https://raw.githubusercontent.com/YOUR_USERNAME/NovaOS/main/install.lua)
 ```
 
 > ⚠️ **Note:** Make sure HTTP API is enabled on your server (`http.enabled = true` in ComputerCraft config).
