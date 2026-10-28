@@ -4,8 +4,7 @@ term.setTextColor(colors.cyan)
 print("=== NovaOS Installer ===")
 term.setTextColor(colors.white)
 
--- Укажи здесь свой ник на GitHub и название репозитория:
-local githubUser = "ТВОЙ_НИК"
+local githubUser = "majnkraftmdzava-lang"
 local githubRepo = "NovaOS"
 local branch = "main"
 
