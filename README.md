@@ -1,4 +1,4 @@
-# 🚀 NovaOS v7.5 Omni Edition
+# 🚀 NovaOS v16.2 Omni Edition
 
 [Русская версия (Russian Version)](README_RU.md)
 
@@ -34,13 +34,6 @@ pastebin run xa2q9LMz
 
 ---
 
-## 🔊 High-Quality Audio Setup
-
-To listen to full original audio tracks (like **Lord Verity**), connect a **Speaker** to your computer and download the audio file via terminal:
-
-```bash
-wget [https://remote.craftos-pc.cc/music/content/yL2v3Fux.wav](https://remote.craftos-pc.cc/music/content/yL2v3Fux.wav) lord_verity.dfpwm
-```
 
 ---
 
