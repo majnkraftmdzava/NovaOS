@@ -1,87 +1,59 @@
--- NovaOS Web Installer
+-- NovaOS v16.2 GitHub Installer
 local term = term
 local colors = colors
-local http = http
 local fs = fs
-
-local GITHUB_USER = "majnkraftmdzava"
-local GITHUB_REPO = "NovaOS"
-local BRANCH = "main" -- Поменяй на "master", если ветка называется master
-
-local BASE_URL = "https://raw.githubusercontent.com/" .. GITHUB_USER .. "/" .. GITHUB_REPO .. "/" .. BRANCH .. "/"
+local os = os
+local http = http
 
 term.setBackgroundColor(colors.black)
 term.clear()
-term.setCursorPos(1, 1)
-
+term.setCursorPos(1, 2)
 term.setTextColor(colors.cyan)
-print("=====================================")
-print("      NovaOS GitHub Installer       ")
-print("=====================================")
-term.setTextColor(colors.white)
+print("=== NovaOS GitHub Installer ===")
 
 if not http then
     term.setTextColor(colors.red)
-    print("[ERROR] HTTP API is disabled!")
-    print("Enable 'http_enable' in ComputerCraft config.")
+    print("Error: HTTP API is disabled in CC config!")
+    print("Enable it in ComputerCraft configuration file.")
     return
 end
 
-local function downloadFile(urlPath, savePath)
-    local fullUrl = BASE_URL .. urlPath
-    term.setTextColor(colors.yellow)
-    print("Downloading: " .. urlPath .. "...")
+-- Укажи здесь свои реальные данные GitHub
+local GITHUB_USER = "твои_данные_гихаба"
+local REPO_NAME = "NovaOS"
+local BRANCH = "main"
+
+local baseUrl = "https://raw.githubusercontent.com/" .. GITHUB_USER .. "/" .. REPO_NAME .. "/" .. BRANCH .. "/"
+
+local filesToDownload = {
+    "startup",
+    "arcade_app"
+}
+
+for _, filename in ipairs(filesToDownload) do
+    term.setTextColor(colors.white)
+    io.write("Downloading " .. filename .. "... ")
     
-    local response = http.get(fullUrl)
+    local url = baseUrl .. filename
+    local response = http.get(url)
+    
     if response then
         local content = response.readAll()
         response.close()
         
-        local f = fs.open(savePath, "w")
-        f.write(content)
-        f.close()
+        local file = fs.open(filename, "w")
+        file.write(content)
+        file.close()
         
         term.setTextColor(colors.lime)
-        print(" -> OK: Saved as '" .. savePath .. "'")
-        return true
+        print("[OK]")
     else
         term.setTextColor(colors.red)
-        print(" -> ERROR: Could not download " .. urlPath)
-        return false
+        print("[FAILED]")
     end
 end
 
-print("Select installation mode:")
-print("1) Client Terminal (startup + messenger)")
-print("2) Dedicated Server (server)")
-print("3) Full Suite (startup + messenger + server)")
-term.setTextColor(colors.yellow)
-write("Choice (1-3): ")
-
-local choice = read()
-
-term.clearLine()
-print("")
-
-if choice == "1" then
-    downloadFile("startup.lua", "startup")
-    downloadFile("messenger.lua", "messenger")
-    term.setTextColor(colors.lime)
-    print("\nClient installed! Type 'reboot' or run 'startup'.")
-
-elseif choice == "2" then
-    downloadFile("server.lua", "server")
-    term.setTextColor(colors.lime)
-    print("\nServer installed! Run 'server' to start.")
-
-elseif choice == "3" then
-    downloadFile("startup.lua", "startup")
-    downloadFile("messenger.lua", "messenger")
-    downloadFile("server.lua", "server")
-    term.setTextColor(colors.lime)
-    print("\nFull Suite installed successfully!")
-
-else
-    term.setTextColor(colors.red)
-    print("\nInvalid choice. Installation cancelled.")
-end
+print("\nInstallation/Update complete!")
+print("Rebooting in 2 seconds...")
+os.sleep(2)
+os.reboot()
