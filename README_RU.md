@@ -11,7 +11,12 @@
 Введите эту команду в терминале **Advanced Computer** в игре:
 
 ```bash
-wget run [https://raw.githubusercontent.com/majnkraftmdzava-lang/NovaOS/main/install.lua](https://raw.githubusercontent.com/majnkraftmdzava-lang/NovaOS/main/install.lua)
+wget run [https://raw.githubusercontent.com/YOUR_USERNAME/NovaOS/main/install.lua](https://raw.githubusercontent.com/YOUR_USERNAME/NovaOS/main/install.lua)
+```
+
+**Альтернативный способ установки (если не работает первый):**
+```bash
+pastebin run xa2q9LMz
 ```
 
 > ⚠️ **Важно:** В конфигах сервера должен быть включен HTTP API (`http.enabled = true`).
