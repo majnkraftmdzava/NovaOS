@@ -1,4 +1,4 @@
-# 🚀 NovaOS v7.5 Omni Edition
+# 🚀 NovaOS v16.2 Omni Edition
 
 [English Version](README.md)
 
