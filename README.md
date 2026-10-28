@@ -11,7 +11,7 @@
 Run this command on your **Advanced Computer** terminal in-game:
 
 ```bash
-wget run [https://raw.githubusercontent.com/majnkraftmdzava-lang/NovaOS/main/install.lua](https://raw.githubusercontent.com/majnkraftmdzava-lang/NovaOS/main/install.lua)
+wget [https://raw.githubusercontent.com/majnkraftmdzava/NovaOS/main/install.lua](https://raw.githubusercontent.com/majnkraftmdzava/NovaOS/main/install.lua) install
 ```
 
 **Alternative Installation Method (if GitHub is unavailable):**
